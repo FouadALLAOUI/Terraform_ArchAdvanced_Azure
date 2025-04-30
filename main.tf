@@ -1,40 +1,33 @@
 # Create a Resource Group
-resource "azurerm_resource_group" "example" {
-  name     = "Terraform_ArchAdvanced"
-  location = "West Europe"
-}
-
-resource "azurerm_kubernetes_cluster" "example" {
-  name                = "example-aks1"
-  location            = azurerm_resource_group.example.location
-  resource_group_name = azurerm_resource_group.example.name
-  dns_prefix          = "exampleaks1"
-
-  default_node_pool {
-    name       = "default"
-    node_count = 1
-    vm_size    = "Standard_D2_v2"
-  }
-
-  identity {
-    type = "SystemAssigned"
-  }
-
+resource "azurerm_resource_group" "rg_dev" {
+  name     = var.rg_name
+  location = var.location
+  
   tags = {
-    Environment = "Production"
+    environment = "training"
+    project     = "apim-integration"
+    managed-by  = "terraform"
   }
 }
 
-output "client_certificate" {
-  value     = azurerm_kubernetes_cluster.example.kube_config[0].client_certificate
-  sensitive = true
+module "cosmosdb" {
+  source              = "./modules/cosmosdb"
+  resource_group_name = azurerm_resource_group.rg_dev.name
+  location            = azurerm_resource_group.rg_dev.location
+  tags = {
+    environment = "training"
+    project     = "apim-integration"
+    managed-by  = "terraform"
+  }
 }
 
-output "kube_config" {
-  value = azurerm_kubernetes_cluster.example.kube_config_raw
 
-  sensitive = true
-}
+
+
+
+
+
+
 
 
 
