@@ -8,13 +8,9 @@ resource "random_integer" "random_suffix" {
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "cosmosdb-training-${random_integer.random_suffix.result}"
   location            = var.location
-  account_tier        = "Standard"
   resource_group_name = var.resource_group_name
   offer_type          = "Standard"
   kind                = "GlobalDocumentDB"
-
-  enable_automatic_failover = false
-  enable_free_tier          = true
 
   capabilities {
     name = "EnableServerless"
@@ -32,7 +28,7 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
   }
 
   geo_location {
-    location          = azurerm_resource_group.example.location
+    location          = var.location
     failover_priority = 0
     zone_redundant    = false
   }
@@ -58,5 +54,6 @@ resource "azurerm_cosmosdb_sql_container" "cosmosdb" {
   resource_group_name = var.resource_group_name
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
   database_name       = azurerm_cosmosdb_sql_database.cosmosdb.name
-  partition_key_path  = "/id"
+  partition_key_paths  = ["/id"]
+  throughput          = 400
 }

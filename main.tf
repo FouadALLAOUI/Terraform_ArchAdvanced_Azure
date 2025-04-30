@@ -2,7 +2,7 @@
 resource "azurerm_resource_group" "rg_dev" {
   name     = var.rg_name
   location = var.location
-  
+
   tags = {
     environment = "training"
     project     = "apim-integration"
