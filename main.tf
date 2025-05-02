@@ -10,6 +10,21 @@ resource "azurerm_resource_group" "rg_dev" {
   }
 }
 
+module "vm" {
+  source = "./modules/vm"
+  resource_group_name = azurerm_resource_group.resource_group.name
+  location = azurerm_resource_group.resource_group.location
+  subnet_id = module.network.subnet_id
+  create_public_ip = true
+  prefix = "cw-vm"
+  environment = "dev"
+  admin_username = "cwadmin"
+  admin_password = "P@ssw0rd"
+  tags = {
+    environment = "dev"
+  }
+}
+
 module "cosmosdb" {
   source            = "./modules/cosmosdb"
   rg_name           = azurerm_resource_group.resource_group.name
