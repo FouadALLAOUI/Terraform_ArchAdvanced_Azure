@@ -8,7 +8,7 @@ resource "random_integer" "random_suffix" {
 resource "azurerm_cosmosdb_account" "cosmosdb" {
   name                = "cosmosdb-training-${random_integer.random_suffix.result}"
   location            = var.location
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.rg_name
   offer_type          = "Standard"
   kind                = "GlobalDocumentDB"
 
@@ -44,14 +44,14 @@ resource "azurerm_cosmosdb_account" "cosmosdb" {
 # Create a Database in Cosmos DB NoSql
 resource "azurerm_cosmosdb_sql_database" "cosmosdb" {
   name                = "test-database"
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.rg_name
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
 }
 
 # Create a Container in Cosmos DB NoSql
 resource "azurerm_cosmosdb_sql_container" "cosmosdb" {
   name                = "test-container"
-  resource_group_name = var.resource_group_name
+  resource_group_name = var.rg_name
   account_name        = azurerm_cosmosdb_account.cosmosdb.name
   database_name       = azurerm_cosmosdb_sql_database.cosmosdb.name
   partition_key_paths  = ["/id"]
