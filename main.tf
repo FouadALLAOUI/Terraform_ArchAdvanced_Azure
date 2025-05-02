@@ -114,6 +114,12 @@ module "managedidentity" {
   }
 }
 
+
+
+
+
+
+/*
 module "apim" {
   source          = "./modules/apim"
   rg_name         = azurerm_resource_group.resource_group.name
@@ -133,14 +139,6 @@ module "apim" {
     module.acr
   ]
 }
-
-
-
-
-
-
-
-
 
 /*
 module "keyvault" {
