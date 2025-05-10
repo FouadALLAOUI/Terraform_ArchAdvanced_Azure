@@ -10,6 +10,54 @@ resource "azurerm_resource_group" "rg_dev" {
   }
 }
 
+module "acr" {
+  source   = "./modules/acr"
+  rg_name  = azurerm_resource_group.rg_dev.name
+  acr_name = "cwacr"
+  location = azurerm_resource_group.rg_dev.location
+}
+
+module "aks" {
+  source              = "./modules/aks"
+  location            = azurerm_resource_group.rg_dev.location
+  rg_name             = azurerm_resource_group.rg_dev.name
+  cluster_name        = "cw-aks"
+  node_pool_name      = "cwaksndpool"
+  identity_type       = "SystemAssigned"
+  acr_id              = module.acr.acr_id
+  node_count          = 2
+  vm_size             = "Standard_B2ms"
+  acr_policy          = "AcrPull"
+  kubernetes_version  = "1.30.0"
+  enable_auto_scaling = false
+  min_node_count      = 1
+  max_node_count      = 3
+  os_disk_size_gb     = 30
+  network_plugin      = "azure"
+  network_policy      = "azure"
+}
+
+module "apim" {
+  source          = "./modules/apim"
+  rg_name         = azurerm_resource_group.rg_dev.name
+  location        = azurerm_resource_group.rg_dev.location
+  publisher_name  = "Connected Workers"
+  publisher_email = "connectedworkers@connectedworkers.com"
+  sku_name        = "Developer_1"
+  api_name        = "cwapi"
+  apim_name       = "devapimcw"
+  tags = {
+    Environment = "Development"
+    Project     = "Connected Workers"
+  }
+  depends_on = [
+    module.aks,
+    //module.cosmosdb,
+    //module.acr
+  ]
+}
+
+/*
 module "vm" {
   source = "./modules/vm"
   resource_group_name = azurerm_resource_group.resource_group.name
@@ -27,8 +75,8 @@ module "vm" {
 
 module "cosmosdb" {
   source            = "./modules/cosmosdb"
-  rg_name           = azurerm_resource_group.resource_group.name
-  location          = azurerm_resource_group.resource_group.location
+  rg_name           = azurerm_resource_group.rg_dev.name
+  location          = azurerm_resource_group.rg_dev.location
   cosmosdb_name     = "cwcosmosdb"
   offer_type        = "Standard"
   kind              = "GlobalDocumentDB"
@@ -59,8 +107,8 @@ module "sqlserver" {
   source                        = "./modules/sqlserver"
   project_name                  = "cw-sqlsrvr"
   environment                   = "dev"
-  resource_group_name           = azurerm_resource_group.resource_group.name
-  location                      = azurerm_resource_group.resource_group.location
+  resource_group_name           = azurerm_resource_group.rg_dev.name
+  location                      = azurerm_resource_group.rg_dev.location
   administrator_login           = "sqladmin"
   administrator_login_password  = "P@ssw0rd"
   database_name                 = "Dev-DB-Connected_Workers"
@@ -76,39 +124,12 @@ module "sqlserver" {
   }
 }
 
-module "acr" {
-  source = "./modules/acr"
-  rg_name = azurerm_resource_group.resource_group.name
-  acr_name = "cwacr"
-  location = azurerm_resource_group.resource_group.location
-}
-
-module "aks" {
-  source = "./modules/aks"
-  location = azurerm_resource_group.resource_group.location
-  rg_name = azurerm_resource_group.resource_group.name
-  cluster_name = "cw-aks"
-  node_pool_name = "cwaksndpool"
-  identity_type = "SystemAssigned"
-  acr_id = module.acr.acr_id
-  node_count = 2
-  vm_size = "Standard_B2ms"
-  acr_policy = "AcrPull"
-  kubernetes_version = "1.30.0"
-  enable_auto_scaling = false
-  min_node_count = 1
-  max_node_count = 3
-  os_disk_size_gb = 30
-  network_plugin = "azure"
-  network_policy = "azure"
-}
-
 module "storageaccount" {
   source                   = "./modules/storageaccount"
   project_name             = "cw-accst"
   environment              = "dev"
-  resource_group_name      = azurerm_resource_group.resource_group.name
-  location                 = azurerm_resource_group.resource_group.location
+  resource_group_name      = azurerm_resource_group.rg_dev.name
+  location                 = azurerm_resource_group.rg_dev.location
   account_tier             = "Standard"
   account_replication_type = "LRS"
   account_kind             = "StorageV2"
@@ -122,37 +143,11 @@ module "managedidentity" {
   source              = "./modules/managedidentity"
   project_name        = "Dev-RG-Connected_Workers"
   environment         = "dev"
-  resource_group_name = azurerm_resource_group.resource_group.name
-  location            = azurerm_resource_group.resource_group.location
+  resource_group_name = azurerm_resource_group.rg_dev.name
+  location            = azurerm_resource_group.rg_dev.location
   tags = {
     environment = "dev"
   }
-}
-
-
-
-
-
-
-/*
-module "apim" {
-  source          = "./modules/apim"
-  rg_name         = azurerm_resource_group.resource_group.name
-  location        = azurerm_resource_group.resource_group.location
-  publisher_name  = "Connected Workers"
-  publisher_email = "connectedworkers@connectedworkers.com"
-  sku_name        = "Developer_1"
-  api_name        = "cwapi"
-  apim_name       = "devapimcw"
-  tags = {
-    Environment = "Development"
-    Project     = "Connected Workers"
-  }
-  depends_on = [
-    module.aks,
-    module.cosmosdb,
-    module.acr
-  ]
 }
 
 /*
@@ -160,8 +155,8 @@ module "keyvault" {
   source = "./modules/keyvault"
   project_name = "cw-keyvault"
   environment = "dev"
-  resource_group_name = azurerm_resource_group.resource_group.name
-  location = azurerm_resource_group.resource_group.location 
+  resource_group_name = azurerm_resource_group.rg_dev.name
+  location = azurerm_resource_group.rg_dev.location 
   sku_name = "standard"
   enabled_for_disk_encryption = true
   enabled_for_deployment = true
