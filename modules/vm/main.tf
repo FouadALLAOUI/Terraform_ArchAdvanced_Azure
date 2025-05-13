@@ -26,7 +26,7 @@ resource "azurerm_virtual_machine" "vm" {
   resource_group_name   = var.resource_group_name
   network_interface_ids = [azurerm_network_interface.nic.id]
   vm_size               = var.vm_size
-  
+
   delete_os_disk_on_termination    = true
   delete_data_disks_on_termination = true
 
@@ -36,7 +36,7 @@ resource "azurerm_virtual_machine" "vm" {
     create_option     = var.os_disk_create_option
     managed_disk_type = var.os_disk_managed_disk_type
   }
-  
+
   storage_image_reference {
     publisher = "Canonical"
     offer     = "UbuntuServer"
@@ -54,18 +54,9 @@ resource "azurerm_virtual_machine" "vm" {
     disable_password_authentication = false
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo apt-get update -y",
-      "sudo apt-get install -y docker.io",
-      "sudo systemctl start docker",
-      "sudo systemctl enable docker"
-    ]
-  }
   tags = var.tags
 }
 
-/*
 # Install Docker on the VM
 resource "azurerm_virtual_machine_extension" "docker_extension" {
   name                 = "DockerExtension"
@@ -112,12 +103,11 @@ resource "azurerm_virtual_machine_extension" "docker_extension" {
             # Verify installation
             docker --version
         EOT
-        )}"
+)}"
     }
 SETTINGS
 
-  tags = {
-    environment = "dev"
-  }
+tags = {
+  environment = "dev"
 }
-*/
+}

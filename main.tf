@@ -14,12 +14,14 @@ module "network" {
   source              = "./modules/network"
   resource_group_name = azurerm_resource_group.rg_dev.name
   location            = azurerm_resource_group.rg_dev.location
-  #vnet_address_space  = ["10.0.0.0/16"]
-  #back_subnet_prefix  = ["10.0.0.0/24"]
-  #front_subnet_prefix = ["10.0.1.0/24"]
-  #data_subnet_prefix  = ["10.0.2.0/24"]
-  vnet_name           = "cw-vnet"
-  tags                = {
+  vnet_address_space  = ["10.0.0.0/16"]
+
+  back_subnet_prefix  = "10.0.0.0/24"
+  front_subnet_prefix = "10.0.1.0/24"
+  data_subnet_prefix  = "10.0.2.0/24"
+
+  vnet_name = "cw-vnet"
+  tags = {
     environment = "dev"
   }
 }
@@ -33,8 +35,8 @@ module "vm" {
   prefix              = "cw-vm"
   environment         = "dev"
   admin_username      = "cwadmin"
-  admin_password      = "ConnectedW0rkers!2023"
-  tags                = {
+  admin_password      = "ConnectedW0rkers!2025"
+  tags = {
     environment = "dev"
   }
 }
