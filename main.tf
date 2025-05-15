@@ -26,21 +26,6 @@ module "network" {
   }
 }
 
-module "vm" {
-  source              = "./modules/vm"
-  resource_group_name = azurerm_resource_group.rg_dev.name
-  location            = azurerm_resource_group.rg_dev.location
-  subnet_id           = module.network.back_subnet_id
-  create_public_ip    = true
-  prefix              = "cw-vm"
-  environment         = "dev"
-  admin_username      = "cwadmin"
-  admin_password      = "ConnectedW0rkers!2025"
-  tags = {
-    environment = "dev"
-  }
-}
-
 
 /*
 module "acr" {
