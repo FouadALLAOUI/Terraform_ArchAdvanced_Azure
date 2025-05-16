@@ -1,6 +1,6 @@
 .terraform/
 .terraform.lock.hcl
 terraform.tfstate*
-backend*
+#backend*
 script.sh
 *.tfstate*
