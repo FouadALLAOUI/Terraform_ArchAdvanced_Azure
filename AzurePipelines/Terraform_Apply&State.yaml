@@ -18,11 +18,18 @@ steps:
   - script: |
       az login --identity
     displayName: 'Azure Login'
-    
+
+  # Define the Terraform backend and initialize the backend
   - script: |
       terraform init
     displayName: 'Terraform Init'
 
+  # Format the Terraform code
+  - script: |
+      terraform fmt
+    displayName: 'Terraform Format'
+
+  # Validate the Terraform code
   - script: |
       terraform fmt
     displayName: 'Terraform Format'
