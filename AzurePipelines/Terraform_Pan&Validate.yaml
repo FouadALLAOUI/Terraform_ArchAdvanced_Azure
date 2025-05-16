@@ -1,0 +1,43 @@
+name: Terraform_Pan&Validate
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    lfsTracked: true
+    lfsInclude: true
+    lfsIgnore: true
+
+  - script: |
+      az login --identity
+    displayName: 'Azure Login'
+
+  - script: |
+      terraform init
+    displayName: 'Terraform Init'
+
+  - script: |
+      terraform fmt
+    displayName: 'Terraform Format'
+
+  - script: |
+      terraform validate
+    displayName: 'Terraform Validate'
+
+  - script: |
+      terraform plan -out=plan.tfplan
+    displayName: 'Terraform Plan'
+
+  - script: |
+      terraform show plan.tfplan
+    displayName: 'Terraform Show Plan'
+    
+
+
+

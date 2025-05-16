@@ -1,0 +1,53 @@
+name: Terraform_Apply&State
+
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+    lfsTracked: true
+    lfsInclude: true
+    lfsIgnore: true
+
+  # Azure Login
+  - script: |
+      az login --identity
+    displayName: 'Azure Login'
+    
+  - script: |
+      terraform init
+    displayName: 'Terraform Init'
+
+  - script: |
+      terraform fmt
+    displayName: 'Terraform Format'
+
+  - script: |
+      terraform validate
+    displayName: 'Terraform Validate'
+
+  - script: |
+      terraform plan -out=plan.tfplan
+    displayName: 'Terraform Plan'
+
+  - script: |
+      terraform apply plan.tfplan
+    displayName: 'Terraform Apply'
+
+  - script: |
+      terraform show plan.tfplan
+    displayName: 'Terraform Show Plan'
+
+  - script: |
+      terraform state list
+    displayName: 'Terraform State List'
+
+  - script: |
+      terraform state show
+    displayName: 'Terraform State Show'
+  
