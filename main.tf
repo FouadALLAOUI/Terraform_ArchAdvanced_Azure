@@ -26,15 +26,6 @@ module "network" {
   }
 }
 
-
-/*
-module "acr" {
-  source   = "./modules/acr"
-  rg_name  = azurerm_resource_group.rg_dev.name
-  acr_name = "cwacr"
-  location = azurerm_resource_group.rg_dev.location
-}
-
 module "aks" {
   source              = "./modules/aks"
   location            = azurerm_resource_group.rg_dev.location
@@ -55,6 +46,16 @@ module "aks" {
   network_policy      = "azure"
 }
 
+
+module "acr" {
+  source   = "./modules/acr"
+  rg_name  = azurerm_resource_group.rg_dev.name
+  acr_name = "cwacr"
+  location = azurerm_resource_group.rg_dev.location
+}
+
+
+/*
 module "apim" {
   source          = "./modules/apim"
   rg_name         = azurerm_resource_group.rg_dev.name

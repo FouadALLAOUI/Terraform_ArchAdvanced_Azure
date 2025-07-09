@@ -1,3 +1,4 @@
+/*
 output "vm_jenkins_id" {
   description = "The ID of the virtual machine"
   value       = module.vm_jenkins.vm_id
@@ -77,7 +78,7 @@ output "public_ip_address_cassandra" {
   description = "The public IP address of the virtual machine"
   value       = module.vm_cassandra.public_ip_address
 }
-
+*/
 
 
 

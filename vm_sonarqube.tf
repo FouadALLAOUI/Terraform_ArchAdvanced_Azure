@@ -1,3 +1,4 @@
+/*
 module "vm_sonarqube" {
   source              = "./modules/vm"
   resource_group_name = azurerm_resource_group.rg_dev.name
@@ -78,3 +79,4 @@ resource "local_file" "sonarqube_public_ip" {
   filename = "sonarqube_public_ip.txt"
 }
 
+*/

@@ -1,4 +1,5 @@
 #Standard_B2s = 2 CPU, 4GB RAM
+/*
 module "vm_cassandra" {
   source              = "./modules/vm"
   resource_group_name = azurerm_resource_group.rg_dev.name
@@ -69,4 +70,4 @@ resource "local_file" "cassandra_public_ip" {
   content = module.vm_cassandra.public_ip_address
   filename = "cassandra_public_ip.txt"
 }
-
+*/

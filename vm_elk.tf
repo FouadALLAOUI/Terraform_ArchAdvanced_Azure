@@ -1,3 +1,4 @@
+/*
 module "vm_elk" {
   source              = "./modules/vm"
   resource_group_name = azurerm_resource_group.rg_dev.name
@@ -193,3 +194,4 @@ resource "local_file" "elk_public_ip" {
   content = module.vm_elk.public_ip_address
   filename = "elk_public_ip.txt"
 }
+*/
