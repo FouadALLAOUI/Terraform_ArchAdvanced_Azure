@@ -65,3 +65,5 @@ RUN terraform --version && az --version
 
 # Default command
 CMD ["bash"]
+
+#--
