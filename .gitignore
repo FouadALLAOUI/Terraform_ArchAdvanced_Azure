@@ -2,5 +2,5 @@
 .terraform.lock.hcl
 terraform.tfstate*
 #backend*
-script.sh
+#script.sh
 *.tfstate*
