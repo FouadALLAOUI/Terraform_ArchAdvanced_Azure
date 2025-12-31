@@ -1,12 +1,21 @@
+# ===========================================================
+# Azure DevOps Pipeline: Terraform_Plan&Validate
+# This pipeline is for code formatting, validation and planning
+# and does NOT perform any changes to the actual infra (No Apply)
+# ===========================================================
+
 name: Terraform_Pan&Validate
 
+# Trigger pipeline on changes to main branch
 trigger:
-- main
+  - main
 
+# Use Ubuntu latest for pipeline jobs
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+  # Step 1: Checkout the source
   - checkout: self
     persistCredentials: true
     clean: true
@@ -14,30 +23,32 @@ steps:
     lfsInclude: true
     lfsIgnore: true
 
+  # Step 2: Azure Login (required for Backend)
   - script: |
       az login --identity
     displayName: 'Azure Login'
 
+  # Step 3: Initialize Terraform (downloads backend providers etc.)
   - script: |
       terraform init
     displayName: 'Terraform Init'
 
+  # Step 4: Check that source files are formatted
   - script: |
-      terraform fmt
-    displayName: 'Terraform Format'
+      terraform fmt -check
+    displayName: 'Terraform Format Check'
 
+  # Step 5: Validate Terraform config
   - script: |
       terraform validate
     displayName: 'Terraform Validate'
 
+  # Step 6: Plan execution (previews changes only, NO APPLY)
   - script: |
       terraform plan -out=plan.tfplan
     displayName: 'Terraform Plan'
 
+  # Step 7: Show the planned changes
   - script: |
       terraform show plan.tfplan
     displayName: 'Terraform Show Plan'
-    
-
-
-

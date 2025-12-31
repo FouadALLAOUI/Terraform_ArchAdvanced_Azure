@@ -1,12 +1,21 @@
+# ============================================
+# Azure DevOps Pipeline: Terraform_Apply&State
+# This pipeline executes apply and state inspection
+# on Terraform configurations with secure Azure login.
+# ============================================
+
 name: Terraform_Apply&State
 
+# Trigger pipeline on changes to the main branch
 trigger:
-- main
+  - main
 
+# Specify the agent to use Ubuntu latest image
 pool:
   vmImage: 'ubuntu-latest'
 
 steps:
+  # Step 1: Checkout repo with all git LFS objects and credentials
   - checkout: self
     persistCredentials: true
     clean: true
@@ -14,47 +23,48 @@ steps:
     lfsInclude: true
     lfsIgnore: true
 
-  # Azure Login
+  # Step 2: Azure Login using Managed Identity
+  # Ensures authentication for subsequent Azure CLI and Terraform operations
   - script: |
       az login --identity
     displayName: 'Azure Login'
 
-  # Define the Terraform backend and initialize the backend
+  # Step 3: Initialize Terraform (downloads backend providers etc.)
   - script: |
       terraform init
     displayName: 'Terraform Init'
 
-  # Format the Terraform code
+  # Step 4: Ensure Terraform files are formatted (for best practices)
   - script: |
-      terraform fmt
-    displayName: 'Terraform Format'
+      terraform fmt -check
+    displayName: 'Terraform Format Check'
 
-  # Validate the Terraform code
-  - script: |
-      terraform fmt
-    displayName: 'Terraform Format'
-
+  # Step 5: Validate Terraform code syntax and configuration
   - script: |
       terraform validate
     displayName: 'Terraform Validate'
 
+  # Step 6: Plan Terraform changes (previews what will happen)
   - script: |
       terraform plan -out=plan.tfplan
     displayName: 'Terraform Plan'
 
+  # Step 7: Apply Terraform plan
   - script: |
-      terraform apply plan.tfplan
+      terraform apply -auto-approve plan.tfplan
     displayName: 'Terraform Apply'
 
+  # Step 8: Show post-apply resource state
   - script: |
       terraform show plan.tfplan
     displayName: 'Terraform Show Plan'
 
+  # Step 9: List current resources from state file
   - script: |
       terraform state list
     displayName: 'Terraform State List'
 
+  # Step 10: (For demo) Show detailed resource info for all in state
   - script: |
-      terraform state show
-    displayName: 'Terraform State Show'
-  
+      for res in $(terraform state list); do terraform state show "$res"; done
+    displayName: 'Terraform State Show All'
