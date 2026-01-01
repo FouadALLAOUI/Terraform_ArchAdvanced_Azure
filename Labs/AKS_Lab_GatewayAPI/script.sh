@@ -1,6 +1,3 @@
-#!/bin/bash
-
-
 # AKS Gateway API Lab - Complete Guide (http-echo version)
 
 ## Overview
@@ -2583,5 +2580,3 @@ az group delete --name $RESOURCE_GROUP --yes --no-wait
 - Check pod logs: `kubectl logs -n <namespace> <pod-name>`
 - Use `kubectl describe httproute <name> -n <namespace>` for detailed status
 - Check Istio health: `kubectl get pods -n aks-istio-
-
-
