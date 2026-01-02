@@ -1,0 +1,61 @@
+# ===========================================================
+# GitHub Actions Workflow: Terraform Plan & Validate
+# Performs formatting check, validation, and plan (NO apply) for PRs and main branch.
+# ===========================================================
+
+name: 'Terraform Plan & Validate'
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform-plan-validate:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Azure Login via OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Step 3: Setup Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      # Step 4: Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+      # Step 5: Format Check
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      # Step 6: Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Step 7: Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan -out=plan.tfplan
+
+      # Step 8: Show planned changes
+      - name: Terraform Show Plan
+        run: terraform show plan.tfplan
+

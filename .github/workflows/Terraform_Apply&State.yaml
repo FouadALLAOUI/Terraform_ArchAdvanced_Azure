@@ -1,0 +1,71 @@
+# ============================================
+# GitHub Actions Workflow: Terraform Apply & State
+# Executes terraform apply and provides state/resource inspection with Azure login via OIDC.
+# ============================================
+
+name: 'Terraform Apply & State'
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  terraform-apply-state:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      # Step 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Azure Login via OIDC
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Step 3: Setup Terraform CLI
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+
+      # Step 4: Terraform Init
+      - name: Terraform Init
+        run: terraform init
+
+      # Step 5: Format Check
+      - name: Terraform Format Check
+        run: terraform fmt -check
+
+      # Step 6: Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Step 7: Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan -out=plan.tfplan
+
+      # Step 8: Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve plan.tfplan
+
+      # Step 9: Show the Terraform plan after apply
+      - name: Terraform Show Plan
+        run: terraform show plan.tfplan
+
+      # Step 10: List all resources in the state
+      - name: Terraform State List
+        run: terraform state list
+
+      # Step 11: Show detailed state for all resources
+      - name: Terraform State Show All
+        run: |
+          for res in $(terraform state list); do terraform state show "$res"; done
+
